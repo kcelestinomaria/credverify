@@ -90,21 +90,30 @@
                             @endif
 
                             <div class="space-y-2">
-                                <a href="{{ route('verification.show', $credential->verification_code) }}" target="_blank" class="block w-full text-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
-                                    {{ __('Public Verification Link') }}
+                                <a href="{{ route('credential.verification.show', $credential->verification_code) }}" target="_blank" class="block w-full text-center bg-primary hover:bg-secondary text-white font-bold py-2 px-4 rounded-xl font-inter transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    Public Verification Link
                                 </a>
 
                                 @if($credential->json_path && file_exists(storage_path('app/public/' . $credential->json_path)))
-                                    <a href="{{ route('credential.json', $credential) }}" class="block w-full text-center bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
-                                        {{ __('Download Blockcerts JSON') }}
+                                    <a href="{{ route('credential.json', $credential) }}" class="block w-full text-center bg-secondary hover:bg-accent text-white font-bold py-2 px-4 rounded-xl font-inter transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                                        <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                        </svg>
+                                        Download Blockcerts JSON
                                     </a>
                                 @endif
 
                                 @if($credential->isVerified())
                                     <form method="POST" action="{{ route('credentials.revoke', $credential) }}" class="w-full">
                                         @csrf
-                                        <button type="submit" class="w-full bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded" onclick="return confirm('Are you sure you want to revoke this credential?')">
-                                            {{ __('Revoke Credential') }}
+                                        <button type="submit" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded-xl font-inter transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105" onclick="return confirm('Are you sure you want to revoke this credential?')">
+                                            <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728L5.636 5.636m12.728 12.728L18.364 5.636M5.636 18.364l12.728-12.728"></path>
+                                            </svg>
+                                            Revoke Credential
                                         </button>
                                     </form>
                                 @endif

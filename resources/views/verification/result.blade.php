@@ -18,7 +18,7 @@
                         <h1 class="text-2xl font-bold text-gray-900">CredVerify</h1>
                     </div>
                     <nav class="space-x-4">
-                        <a href="{{ route('verification.index') }}" class="text-gray-600 hover:text-gray-900">Verify Another</a>
+                        <a href="{{ route('credential.verification.index') }}" class="text-gray-600 hover:text-gray-900">Verify Another</a>
                         <a href="{{ route('login') }}" class="text-gray-600 hover:text-gray-900">Login</a>
                     </nav>
                 </div>
@@ -143,7 +143,7 @@
                         <!-- Actions -->
                         <div class="px-6 py-6 text-center">
                             <p class="text-gray-600 mb-4">Please check the verification code and try again.</p>
-                            <a href="{{ route('verification.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
+                            <a href="{{ route('credential.verification.index') }}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700">
                                 Try Again
                             </a>
                         </div>
@@ -152,7 +152,7 @@
 
                 <!-- Additional Actions -->
                 <div class="mt-8 text-center">
-                    <a href="{{ route('verification.index') }}" class="text-blue-600 hover:text-blue-800">
+                                            <a href="{{ route('credential.verification.index') }}" class="text-blue-600 hover:text-blue-800">
                         ← Verify Another Credential
                     </a>
                 </div>

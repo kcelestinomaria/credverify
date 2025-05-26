@@ -29,7 +29,7 @@
                         Verify Credential
                     </a>
                 @endif
-                <a href="{{ route('verification.index') }}" class="bg-white hover:bg-gray-50 text-primary border-2 border-gray-200 hover:border-primary px-6 py-3 rounded-xl font-semibold font-inter transition-all duration-300 shadow-md hover:shadow-lg">
+                <a href="{{ route('credential.verification.index') }}" class="bg-white hover:bg-gray-50 text-primary border-2 border-gray-200 hover:border-primary px-6 py-3 rounded-xl font-semibold font-inter transition-all duration-300 shadow-md hover:shadow-lg">
                     <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                     </svg>
@@ -423,7 +423,7 @@
                     <div>
                         <h3 class="text-2xl font-bold font-poppins mb-2">Public Verification Portal</h3>
                         <p class="text-white/90 mb-4 font-inter">Allow anyone to verify credentials instantly without requiring an account</p>
-                        <a href="{{ route('verification.index') }}" class="inline-flex items-center bg-white text-primary px-6 py-3 rounded-xl font-semibold font-inter hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                        <a href="{{ route('credential.verification.index') }}" class="inline-flex items-center bg-white text-primary px-6 py-3 rounded-xl font-semibold font-inter hover:bg-gray-100 transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
                             <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>

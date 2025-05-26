@@ -41,7 +41,7 @@
                     </div>
                 @endif
 
-                <form method="POST" action="{{ route('verification.verify') }}" class="mt-8 space-y-6">
+                <form method="POST" action="{{ route('credential.verification.verify') }}" class="mt-8 space-y-6">
                     @csrf
                     <div>
                         <label for="verification_code" class="block text-sm font-medium text-gray-700">

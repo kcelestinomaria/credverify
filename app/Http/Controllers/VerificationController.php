@@ -18,7 +18,7 @@ class VerificationController extends Controller
         $verificationCode = $code ?? $request->input('verification_code');
         
         if (!$verificationCode) {
-            return redirect()->route('verification.index')
+            return redirect()->route('credential.verification.index')
                 ->with('error', 'Please enter a verification code.');
         }
 

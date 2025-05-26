@@ -13,9 +13,9 @@ Route::get('/', function () {
 });
 
 // Public verification routes
-Route::get('/verify', [VerificationController::class, 'index'])->name('verification.index');
-Route::post('/verify', [VerificationController::class, 'verify'])->name('verification.verify');
-Route::get('/verify/{code}', [VerificationController::class, 'verify'])->name('verification.show');
+Route::get('/verify', [VerificationController::class, 'index'])->name('credential.verification.index');
+Route::post('/verify', [VerificationController::class, 'verify'])->name('credential.verification.verify');
+Route::get('/verify/{code}', [VerificationController::class, 'verify'])->name('credential.verification.show');
 
 // Institution-specific verification routes
 Route::get('/institution/{institution:slug}/verify', [VerificationController::class, 'institutionVerify'])->name('verification.institution');

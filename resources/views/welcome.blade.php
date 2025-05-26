@@ -44,7 +44,7 @@
                 
                 @if (Route::has('login'))
                     <div class="flex items-center space-x-6">
-                        <a href="{{ route('verification.index') }}" class="text-primary hover:text-secondary font-medium font-inter transition-colors">
+                        <a href="{{ route('credential.verification.index') }}" class="text-primary hover:text-secondary font-medium font-inter transition-colors">
                             Verify Credential
                         </a>
                         @auth
@@ -102,7 +102,7 @@
                             </svg>
                         </span>
                     </a>
-                    <a href="{{ route('verification.index') }}" class="group glass-effect text-white border-2 border-white/30 hover:border-white/50 px-8 py-4 rounded-xl font-bold font-inter text-lg transition-all duration-300 hover:bg-white/10">
+                    <a href="{{ route('credential.verification.index') }}" class="group glass-effect text-white border-2 border-white/30 hover:border-white/50 px-8 py-4 rounded-xl font-bold font-inter text-lg transition-all duration-300 hover:bg-white/10">
                         <span class="flex items-center space-x-2">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -257,7 +257,7 @@
                         </svg>
                     </span>
                 </a>
-                <a href="{{ route('verification.index') }}" class="group glass-effect text-white border-2 border-white/30 hover:border-white/50 px-10 py-5 rounded-xl font-bold font-inter text-lg transition-all duration-300 hover:bg-white/10">
+                <a href="{{ route('credential.verification.index') }}" class="group glass-effect text-white border-2 border-white/30 hover:border-white/50 px-10 py-5 rounded-xl font-bold font-inter text-lg transition-all duration-300 hover:bg-white/10">
                     <span class="flex items-center justify-center space-x-2">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
@@ -290,7 +290,7 @@
                 <div>
                     <h4 class="text-lg font-semibold font-poppins mb-6">Quick Links</h4>
                     <ul class="space-y-3 font-inter">
-                        <li><a href="{{ route('verification.index') }}" class="text-white/80 hover:text-white transition-colors">Verify Credential</a></li>
+                        <li><a href="{{ route('credential.verification.index') }}" class="text-white/80 hover:text-white transition-colors">Verify Credential</a></li>
                         <li><a href="{{ route('login') }}" class="text-white/80 hover:text-white transition-colors">Login</a></li>
                         <li><a href="{{ route('register') }}" class="text-white/80 hover:text-white transition-colors">Register</a></li>
                     </ul>
