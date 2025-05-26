@@ -19,7 +19,8 @@ class RegisteredUserController extends Controller
      */
     public function create(): View
     {
-        return view('auth.register');
+        $institutions = \App\Models\Institution::all();
+        return view('auth.register', compact('institutions'));
     }
 
     /**
@@ -29,17 +30,37 @@ class RegisteredUserController extends Controller
      */
     public function store(Request $request): RedirectResponse
     {
-        $request->validate([
+        $validationRules = [
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
-        ]);
+            'role' => ['required', 'in:admin,employer'],
+        ];
 
-        $user = User::create([
+        // Add conditional validation based on role
+        if ($request->role === 'admin') {
+            $validationRules['institution_id'] = ['required', 'exists:institutions,id'];
+        } elseif ($request->role === 'employer') {
+            $validationRules['company'] = ['required', 'string', 'max:255'];
+        }
+
+        $request->validate($validationRules);
+
+        $userData = [
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-        ]);
+            'role' => $request->role,
+        ];
+
+        // Set institution_id for admins, company for employers
+        if ($request->role === 'admin') {
+            $userData['institution_id'] = $request->institution_id;
+        } elseif ($request->role === 'employer') {
+            $userData['company'] = $request->company;
+        }
+
+        $user = User::create($userData);
 
         event(new Registered($user));
 

@@ -6,11 +6,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
 class User extends Authenticatable
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, Notifiable;
+    use HasFactory, Notifiable, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -21,6 +22,9 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
+        'institution_id',
+        'company',
     ];
 
     /**
@@ -44,5 +48,45 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Get the institution that the user belongs to.
+     */
+    public function institution()
+    {
+        return $this->belongsTo(Institution::class);
+    }
+
+    /**
+     * Get the credentials issued by this user.
+     */
+    public function credentials()
+    {
+        return $this->hasMany(Credential::class);
+    }
+
+    /**
+     * Get the employer verifications performed by this user.
+     */
+    public function employerVerifications()
+    {
+        return $this->hasMany(EmployerVerification::class, 'employer_user_id');
+    }
+
+    /**
+     * Check if the user is an admin.
+     */
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if the user is an employer.
+     */
+    public function isEmployer()
+    {
+        return $this->role === 'employer';
     }
 }
