@@ -1,11 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 dark:text-gray-200 leading-tight">
-                {{ __('Credential Details') }}
-            </h2>
-            <a href="{{ route('credentials.index') }}" class="bg-gray-500 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">
-                {{ __('Back to Credentials') }}
+            <div>
+                <h2 class="font-bold text-3xl font-poppins text-primary dark:text-white leading-tight">
+                    Credential Details
+                </h2>
+                <p class="text-gray-600 dark:text-gray-400 mt-1 font-inter">
+                    View and manage credential information
+                </p>
+            </div>
+            <a href="{{ route('credentials.index') }}" class="bg-primary hover:bg-secondary text-white px-6 py-3 rounded-xl font-semibold font-inter transition-all duration-300 shadow-lg hover:shadow-xl transform hover:scale-105">
+                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Credentials
             </a>
         </div>
     </x-slot>
@@ -74,13 +82,9 @@
                         <div class="space-y-4">
                             <h3 class="text-lg font-semibold text-gray-900 dark:text-gray-100">Verification</h3>
                             
-                            @php
-                                $qrPath = 'credentials/qr/qr_' . $credential->verification_code . '.png';
-                            @endphp
-                            
-                            @if(file_exists(storage_path('app/public/' . $qrPath)))
+                            @if($credential->qr_code_path && file_exists(storage_path('app/public/' . $credential->qr_code_path)))
                                 <div class="text-center">
-                                    <img src="{{ asset('storage/' . $qrPath) }}" alt="QR Code" class="mx-auto border rounded">
+                                    <img src="{{ asset('storage/' . $credential->qr_code_path) }}" alt="QR Code" class="mx-auto border rounded">
                                     <p class="mt-2 text-sm text-gray-600 dark:text-gray-400">Scan to verify credential</p>
                                 </div>
                             @endif
@@ -129,4 +133,18 @@
             </div>
         </div>
     </div>
+
+    <style>
+        .font-poppins { font-family: 'Poppins', sans-serif; }
+        .font-inter { font-family: 'Inter', sans-serif; }
+        .bg-primary { background-color: #1F3B73; }
+        .bg-secondary { background-color: #2BAE66; }
+        .bg-accent { background-color: #F5C542; }
+        .text-primary { color: #1F3B73; }
+        .text-secondary { color: #2BAE66; }
+        .text-accent { color: #F5C542; }
+        .border-primary { border-color: #1F3B73; }
+        .border-secondary { border-color: #2BAE66; }
+        .border-accent { border-color: #F5C542; }
+    </style>
 </x-app-layout> 

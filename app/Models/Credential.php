@@ -20,6 +20,7 @@ class Credential extends Model
         'hash',
         'verification_code',
         'json_path',
+        'qr_code_path',
         'status',
     ];
 

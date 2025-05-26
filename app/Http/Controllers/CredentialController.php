@@ -161,8 +161,11 @@ class CredentialController extends Controller
     {
         $verificationUrl = url('/verify/' . $credential->verification_code);
         
-        $qrCode = new QrCode($verificationUrl);
-        $qrCode->setSize(300);
+        $qrCode = new QrCode(
+            data: $verificationUrl,
+            size: 300,
+            margin: 10
+        );
         
         $writer = new PngWriter();
         $result = $writer->write($qrCode);
@@ -171,6 +174,8 @@ class CredentialController extends Controller
         $qrPath = 'credentials/qr/' . $qrFilename;
         
         Storage::disk('public')->put($qrPath, $result->getString());
+        
+        $credential->update(['qr_code_path' => $qrPath]);
         
         return $qrPath;
     }
