@@ -21,11 +21,24 @@ class Credential extends Model
         'verification_code',
         'json_path',
         'qr_code_path',
+        'batch_id',
+        'merkle_proof',
+        'digital_signature',
+        'signature_algorithm',
+        'signed_at',
+        'blockchain_anchored',
+        'anchored_at',
+        'blockcerts_metadata',
         'status',
     ];
 
     protected $casts = [
         'issued_on' => 'date',
+        'merkle_proof' => 'array',
+        'signed_at' => 'datetime',
+        'blockchain_anchored' => 'boolean',
+        'anchored_at' => 'datetime',
+        'blockcerts_metadata' => 'array',
     ];
 
     /**
@@ -42,6 +55,22 @@ class Credential extends Model
     public function institution()
     {
         return $this->belongsTo(Institution::class);
+    }
+
+    /**
+     * Get the blockchain anchor for this credential's batch
+     */
+    public function blockchainAnchor()
+    {
+        return $this->belongsTo(BlockchainAnchor::class, 'batch_id', 'batch_id');
+    }
+
+    /**
+     * Get the revocation registry entry for this credential
+     */
+    public function revocationRegistry()
+    {
+        return $this->hasOne(RevocationRegistry::class);
     }
 
     /**
@@ -78,5 +107,82 @@ class Credential extends Model
         } while (self::where('verification_code', $code)->exists());
 
         return $code;
+    }
+
+    /**
+     * Check if credential is digitally signed
+     */
+    public function isSigned()
+    {
+        return !empty($this->digital_signature) && !empty($this->signed_at);
+    }
+
+    /**
+     * Check if credential is anchored to blockchain
+     */
+    public function isBlockchainAnchored()
+    {
+        return $this->blockchain_anchored && !empty($this->anchored_at);
+    }
+
+    /**
+     * Check if credential has Merkle proof
+     */
+    public function hasMerkleProof()
+    {
+        return !empty($this->merkle_proof);
+    }
+
+    /**
+     * Check if credential is fully Blockcerts compliant
+     */
+    public function isBlockcertsCompliant()
+    {
+        return $this->isSigned() && 
+               $this->isBlockchainAnchored() && 
+               $this->hasMerkleProof() &&
+               !empty($this->blockcerts_metadata);
+    }
+
+    /**
+     * Check if credential is revoked on blockchain
+     */
+    public function isRevokedOnBlockchain()
+    {
+        $revocation = $this->revocationRegistry;
+        return $revocation && $revocation->isConfirmed();
+    }
+
+    /**
+     * Get blockchain verification status
+     */
+    public function getBlockchainStatus()
+    {
+        if ($this->isRevokedOnBlockchain()) {
+            return 'revoked';
+        }
+
+        if (!$this->isBlockchainAnchored()) {
+            return 'not_anchored';
+        }
+
+        $anchor = $this->blockchainAnchor;
+        if (!$anchor) {
+            return 'anchor_missing';
+        }
+
+        if ($anchor->isPending()) {
+            return 'pending';
+        }
+
+        if ($anchor->isFailed()) {
+            return 'failed';
+        }
+
+        if ($anchor->isConfirmed()) {
+            return 'confirmed';
+        }
+
+        return 'unknown';
     }
 }

@@ -51,6 +51,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::middleware('can:manage-credentials')->group(function () {
         Route::resource('credentials', CredentialController::class)->except(['edit', 'update']);
         Route::post('/credentials/{credential}/revoke', [CredentialController::class, 'revoke'])->name('credentials.revoke');
+        Route::post('/credentials/process-batch', [CredentialController::class, 'processPendingBatch'])->name('credentials.process-batch');
     });
 });
 

@@ -3,6 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\Credential;
+use App\Models\BlockchainAnchor;
+use App\Models\RevocationRegistry;
+use App\Services\BlockchainService;
+use App\Services\BlockcertsService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -12,6 +16,14 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class CredentialController extends Controller
 {
+    private $blockchainService;
+    private $blockcertsService;
+
+    public function __construct(BlockchainService $blockchainService, BlockcertsService $blockcertsService)
+    {
+        $this->blockchainService = $blockchainService;
+        $this->blockcertsService = $blockcertsService;
+    }
     public function index()
     {
         $user = Auth::user();
@@ -81,14 +93,25 @@ class CredentialController extends Controller
             'status' => 'Verified',
         ]);
 
-        // Generate Blockcerts JSON
-        $this->generateBlockcertsJson($credential);
+        // Generate institution keys if they don't exist
+        $this->ensureInstitutionKeys($user->institution_id);
+
+        // Generate Blockcerts credential with digital signature
+        $blockcertsResult = $this->blockcertsService->generateBlockcertsCredential($credential);
+        
+        if (!$blockcertsResult['success']) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to generate Blockcerts credential: ' . $blockcertsResult['error']]);
+        }
 
         // Generate QR Code
         $this->generateQrCode($credential);
 
+        // Check if we should process for blockchain anchoring
+        $this->processBlockchainAnchoring($credential);
+
         return redirect()->route('credentials.index')
-            ->with('success', 'Credential uploaded successfully!');
+            ->with('success', 'Credential uploaded and digitally signed successfully! Blockchain anchoring in progress.');
     }
 
     public function show(Credential $credential)
@@ -110,51 +133,126 @@ class CredentialController extends Controller
             abort(403, 'Unauthorized');
         }
 
-        $credential->update(['status' => 'Revoked']);
+        try {
+            // Update credential status
+            $credential->update(['status' => 'Revoked']);
 
-        return redirect()->route('credentials.index')
-            ->with('success', 'Credential revoked successfully!');
+            // Add to blockchain revocation registry
+            if ($credential->isBlockchainAnchored()) {
+                $revocationResult = $this->blockchainService->addToRevocationRegistry(
+                    $credential->verification_code,
+                    'Revoked by institution'
+                );
+
+                // Create revocation registry record
+                RevocationRegistry::create([
+                    'credential_id' => $credential->id,
+                    'revocation_transaction_hash' => $revocationResult['transaction_hash'],
+                    'reason' => 'Revoked by institution',
+                    'revoked_at' => now(),
+                    'revoked_by' => $user->name,
+                    'blockchain' => 'ethereum',
+                    'network' => config('blockchain.network', 'sepolia'),
+                    'status' => 'pending'
+                ]);
+
+                return redirect()->route('credentials.index')
+                    ->with('success', 'Credential revoked successfully! Blockchain revocation in progress.');
+            }
+
+            return redirect()->route('credentials.index')
+                ->with('success', 'Credential revoked successfully!');
+
+        } catch (\Exception $e) {
+            return redirect()->back()
+                ->withErrors(['error' => 'Failed to revoke credential: ' . $e->getMessage()]);
+        }
     }
 
-    private function generateBlockcertsJson(Credential $credential)
+    /**
+     * Ensure institution has cryptographic keys
+     */
+    private function ensureInstitutionKeys($institutionId)
     {
-        $blockcertsData = [
-            '@context' => [
-                'https://www.w3.org/2018/credentials/v1',
-                'https://www.blockcerts.org/schema/3.0-alpha/context.json'
-            ],
-            'type' => ['VerifiableCredential', 'BlockcertsCredential'],
-            'issuer' => [
-                'id' => url('/institution/' . $credential->institution->slug),
-                'name' => $credential->institution->name,
-                'email' => $credential->institution->contact_email,
-            ],
-            'issuanceDate' => $credential->issued_on->toISOString(),
-            'credentialSubject' => [
-                'id' => 'urn:uuid:' . Str::uuid(),
-                'name' => $credential->full_name,
-                'credentialType' => $credential->credential_type,
-                'issuedBy' => $credential->issued_by,
-            ],
-            'proof' => [
-                'type' => 'MerkleProof2019',
-                'created' => now()->toISOString(),
-                'verificationMethod' => url('/verification/' . $credential->verification_code),
-                'proofValue' => $credential->hash,
-            ],
-            'verification' => [
-                'type' => 'hosted',
-                'url' => url('/verify/' . $credential->verification_code),
-            ],
-        ];
+        $privateKeyPath = storage_path("app/keys/institution_{$institutionId}_private.pem");
+        $publicKeyPath = storage_path("app/keys/institution_{$institutionId}_public.pem");
 
-        $jsonContent = json_encode($blockcertsData, JSON_PRETTY_PRINT);
-        $jsonFilename = 'blockcerts_' . $credential->verification_code . '.json';
-        $jsonPath = 'credentials/json/' . $jsonFilename;
+        if (!file_exists($privateKeyPath) || !file_exists($publicKeyPath)) {
+            // Create keys directory if it doesn't exist
+            if (!is_dir(storage_path('app/keys'))) {
+                mkdir(storage_path('app/keys'), 0755, true);
+            }
+
+            $this->blockchainService->generateInstitutionKeys($institutionId);
+        }
+    }
+
+    /**
+     * Process credentials for blockchain anchoring
+     */
+    private function processBlockchainAnchoring(Credential $credential)
+    {
+        // Get unanchored credentials for this institution
+        $unanchoredCredentials = Credential::where('institution_id', $credential->institution_id)
+            ->where('blockchain_anchored', false)
+            ->whereNotNull('digital_signature')
+            ->get();
+
+        // If we have enough credentials or it's been long enough, process batch
+        $batchSize = config('blockchain.batch_size', 10);
         
-        Storage::disk('public')->put($jsonPath, $jsonContent);
+        if ($unanchoredCredentials->count() >= $batchSize) {
+            $this->processBatchForAnchoring($unanchoredCredentials->take($batchSize));
+        }
+    }
+
+    /**
+     * Process a batch of credentials for blockchain anchoring
+     */
+    private function processBatchForAnchoring($credentials)
+    {
+        try {
+            $result = $this->blockcertsService->processCredentialsForAnchoring($credentials);
+            
+            if ($result['success']) {
+                \Log::info('Batch anchored successfully', [
+                    'batch_id' => $result['batch_id'],
+                    'transaction_hash' => $result['transaction_hash'],
+                    'credentials_count' => $credentials->count()
+                ]);
+            } else {
+                \Log::error('Batch anchoring failed', ['error' => $result['error']]);
+            }
+        } catch (\Exception $e) {
+            \Log::error('Batch anchoring exception', ['error' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Add method to manually trigger batch processing
+     */
+    public function processPendingBatch()
+    {
+        $user = Auth::user();
         
-        $credential->update(['json_path' => $jsonPath]);
+        if (!$user->isAdmin()) {
+            abort(403, 'Unauthorized');
+        }
+
+        $unanchoredCredentials = Credential::where('institution_id', $user->institution_id)
+            ->where('blockchain_anchored', false)
+            ->whereNotNull('digital_signature')
+            ->get();
+
+        if ($unanchoredCredentials->isEmpty()) {
+            return redirect()->back()
+                ->with('info', 'No credentials pending blockchain anchoring.');
+        }
+
+        $this->processBatchForAnchoring($unanchoredCredentials);
+
+        return redirect()->back()
+            ->with('success', 'Batch processing initiated for ' . $unanchoredCredentials->count() . ' credentials.');
     }
 
     private function generateQrCode(Credential $credential)
