@@ -15,7 +15,7 @@ CredVerify is a secure, decentralized platform for issuing and verifying academi
 
 - **Backend**: Laravel 10.x
 - **Frontend**: Blade, Tailwind CSS, Alpine.js
-- **Blockchain**: Ethereum, Web3.php
+- **Blockchain**: Ethereum, Web3.php(Through Blockcerts)
 - **Database**: MySQL/PostgreSQL
 - **Authentication**: Laravel Breeze
 
