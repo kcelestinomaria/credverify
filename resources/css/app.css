@@ -3,34 +3,68 @@
 @tailwind utilities;
 
 /* Import Fonts */
-@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap');
 
-/* CredVerify Design System - Based on Technical Specification */
+/* Jasiri Design System - Modern & Accessible */
 :root {
-    /* Primary Colors */
-    --primary: #1F3B73;      /* Navy Blue */
-    --secondary: #2BAE66;    /* Emerald */
-    --accent: #F5C542;       /* Gold */
+    /* Jasiri Brand Colors */
+    --jasiri-teal: #54e6b6;
+    --jasiri-blue: #2563eb;
+    --jasiri-black: #000000;
+    --jasiri-white: #ffffff;
+    
+    /* Semantic Color System */
+    --primary: var(--jasiri-teal);
+    --secondary: var(--jasiri-blue);
+    --accent: #fbbf24; /* Amber for warnings/info */
     
     /* Neutral Colors */
-    --gray-50: #F9FAFB;
-    --gray-100: #F3F4F6;
-    --gray-200: #E5E7EB;
-    --gray-300: #D1D5DB;
-    --gray-400: #9CA3AF;
-    --gray-500: #6B7280;
-    --gray-600: #4B5563;
+    --gray-50: #f9fafb;
+    --gray-100: #f3f4f6;
+    --gray-200: #e5e7eb;
+    --gray-300: #d1d5db;
+    --gray-400: #9ca3af;
+    --gray-500: #6b7280;
+    --gray-600: #4b5563;
     --gray-700: #374151;
-    --gray-800: #1F2937;
+    --gray-800: #1f2937;
     --gray-900: #111827;
     
     /* Typography */
     --font-poppins: 'Poppins', sans-serif;
     --font-inter: 'Inter', sans-serif;
+    
+    /* Glassmorphism */
+    --glass-bg: rgba(255, 255, 255, 0.1);
+    --glass-border: rgba(255, 255, 255, 0.2);
+    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+}
+
+/* Dark Mode Variables */
+@media (prefers-color-scheme: dark) {
+    :root {
+        --glass-bg: rgba(0, 0, 0, 0.2);
+        --glass-border: rgba(255, 255, 255, 0.1);
+    }
+}
+
+@layer base {
+    /* Base Typography */
+    body {
+        font-family: var(--font-inter);
+        color: var(--gray-900);
+        background: linear-gradient(135deg, var(--jasiri-teal) 0%, var(--jasiri-blue) 100%);
+        min-height: 100vh;
+    }
+    
+    /* Dark mode text adjustments */
+    .dark body {
+        color: var(--gray-100);
+    }
 }
 
 @layer components {
-    /* Base Typography */
+    /* Typography Classes */
     .font-poppins { 
         font-family: var(--font-poppins); 
     }
@@ -39,245 +73,234 @@
         font-family: var(--font-inter); 
     }
 
-    /* Color Utilities */
+    /* Text Color System - Works in both light and dark modes */
+    .text-primary {
+        color: var(--gray-900);
+    }
+    
+    .dark .text-primary {
+        color: var(--gray-100);
+    }
+    
+    .text-secondary {
+        color: var(--gray-600);
+    }
+    
+    .dark .text-secondary {
+        color: var(--gray-400);
+    }
+    
+    .text-accent {
+        color: var(--jasiri-blue);
+    }
+    
+    .dark .text-accent {
+        color: var(--jasiri-teal);
+    }
+
+    /* Background Colors */
     .bg-primary { 
-        background-color: var(--primary); 
+        background-color: var(--jasiri-teal); 
     }
 
     .bg-secondary { 
-        background-color: var(--secondary); 
+        background-color: var(--jasiri-blue); 
     }
 
     .bg-accent { 
         background-color: var(--accent); 
     }
 
-    .text-primary { 
-        color: var(--primary); 
+    /* Glass Card Component */
+    .glass-card {
+        background: var(--glass-bg);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
+        border: 1px solid var(--glass-border);
+        box-shadow: var(--glass-shadow);
+        border-radius: 1rem;
     }
 
-    .text-secondary { 
-        color: var(--secondary); 
-    }
-
-    .text-accent { 
-        color: var(--accent); 
-    }
-
-    .border-primary { 
-        border-color: var(--primary); 
-    }
-
-    .border-secondary { 
-        border-color: var(--secondary); 
-    }
-
-    .border-accent { 
-        border-color: var(--accent); 
-    }
-
-    /* Focus States */
-    .focus\:ring-primary:focus { 
-        --tw-ring-color: var(--primary); 
-    }
-
-    .focus\:border-primary:focus { 
-        border-color: var(--primary); 
-    }
-
-    .focus\:ring-secondary:focus { 
-        --tw-ring-color: var(--secondary); 
-    }
-
-    .focus\:border-secondary:focus { 
-        border-color: var(--secondary); 
-    }
-
-    /* Hover States */
-    .hover\:bg-primary:hover { 
-        background-color: var(--primary); 
-    }
-
-    .hover\:bg-secondary:hover { 
-        background-color: var(--secondary); 
-    }
-
-    .hover\:text-primary:hover { 
-        color: var(--primary); 
-    }
-
-    .hover\:text-secondary:hover { 
-        color: var(--secondary); 
-    }
-
-    /* Component Styles */
+    /* Button Components */
     .btn-primary {
-        background-color: var(--primary);
-        color: white;
-        font-weight: 600;
-        font-family: var(--font-inter);
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: scale(1);
-    }
-
-    .btn-primary:hover {
-        background-color: var(--secondary);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        transform: scale(1.05);
+        @apply bg-jasiri-teal text-white font-inter font-semibold px-6 py-3 rounded-xl;
+        @apply transition-all duration-300 ease-in-out;
+        @apply shadow-lg hover:shadow-xl;
+        @apply transform hover:scale-105;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-teal focus:ring-opacity-50;
     }
 
     .btn-secondary {
-        background-color: var(--secondary);
-        color: white;
-        font-weight: 600;
-        font-family: var(--font-inter);
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: scale(1);
-    }
-
-    .btn-secondary:hover {
-        background-color: var(--primary);
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        transform: scale(1.05);
+        @apply bg-jasiri-blue text-white font-inter font-semibold px-6 py-3 rounded-xl;
+        @apply transition-all duration-300 ease-in-out;
+        @apply shadow-lg hover:shadow-xl;
+        @apply transform hover:scale-105;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-blue focus:ring-opacity-50;
     }
 
     .btn-accent {
-        background-color: var(--accent);
-        color: white;
-        font-weight: 600;
-        font-family: var(--font-inter);
-        padding: 0.75rem 1.5rem;
-        border-radius: 0.75rem;
-        transition: all 0.3s ease;
-        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-        transform: scale(1);
+        @apply bg-jasiri-amber-400 text-white font-inter font-semibold px-6 py-3 rounded-xl;
+        @apply transition-all duration-300 ease-in-out;
+        @apply shadow-lg hover:shadow-xl;
+        @apply transform hover:scale-105;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-amber-400 focus:ring-opacity-50;
     }
 
-    .btn-accent:hover {
-        background-color: #D97706;
-        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
-        transform: scale(1.05);
+    .btn-outline {
+        @apply border-2 border-jasiri-teal text-jasiri-teal bg-transparent font-inter font-semibold px-6 py-3 rounded-xl;
+        @apply transition-all duration-300 ease-in-out;
+        @apply hover:bg-jasiri-teal hover:text-white;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-teal focus:ring-opacity-50;
     }
 
+    /* Card Components */
     .card {
-        background-color: white;
-        border-radius: 0.75rem;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
-        border: 1px solid var(--gray-100);
-        overflow: hidden;
+        @apply bg-white dark:bg-gray-800 rounded-xl shadow-xl;
+        @apply border border-gray-200 dark:border-gray-700;
+        @apply overflow-hidden;
+        @apply transition-all duration-300 ease-in-out;
+    }
+
+    .card:hover {
+        @apply shadow-2xl transform scale-105;
     }
 
     .card-header {
-        background: linear-gradient(to right, var(--primary), var(--secondary));
-        padding: 1.5rem;
-        color: white;
+        @apply bg-gradient-to-r from-jasiri-teal to-jasiri-blue;
+        @apply p-6 text-white;
     }
 
+    /* Form Components */
     .input-field {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 1rem;
-        border: 1px solid var(--gray-300);
-        border-radius: 0.75rem;
-        transition: all 0.2s ease;
-        background-color: var(--gray-50);
-        font-family: var(--font-inter);
-    }
-
-    .input-field:focus {
-        outline: none;
-        ring: 2px solid var(--primary);
-        border-color: var(--primary);
-        background-color: white;
+        @apply block w-full px-4 py-3 rounded-xl;
+        @apply border border-gray-300 dark:border-gray-600;
+        @apply bg-gray-50 dark:bg-gray-700;
+        @apply text-gray-900 dark:text-gray-100;
+        @apply font-inter;
+        @apply transition-all duration-200 ease-in-out;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-teal focus:border-jasiri-teal;
+        @apply focus:bg-white dark:focus:bg-gray-600;
     }
 
     .input-field-with-icon {
-        display: block;
-        width: 100%;
-        padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-        border: 1px solid var(--gray-300);
-        border-radius: 0.75rem;
-        transition: all 0.2s ease;
-        background-color: var(--gray-50);
-        font-family: var(--font-inter);
-    }
-
-    .input-field-with-icon:focus {
-        outline: none;
-        ring: 2px solid var(--primary);
-        border-color: var(--primary);
-        background-color: white;
+        @apply block w-full pl-12 pr-4 py-3 rounded-xl;
+        @apply border border-gray-300 dark:border-gray-600;
+        @apply bg-gray-50 dark:bg-gray-700;
+        @apply text-gray-900 dark:text-gray-100;
+        @apply font-inter;
+        @apply transition-all duration-200 ease-in-out;
+        @apply focus:outline-none focus:ring-2 focus:ring-jasiri-teal focus:border-jasiri-teal;
+        @apply focus:bg-white dark:focus:bg-gray-600;
     }
 
     .label {
-        display: block;
-        font-size: 0.875rem;
-        font-weight: 600;
-        font-family: var(--font-inter);
-        color: var(--primary);
-        margin-bottom: 0.5rem;
+        @apply block text-sm font-semibold font-inter;
+        @apply text-gray-700 dark:text-gray-300;
+        @apply mb-2;
     }
 
+    /* Typography Components */
     .heading-1 {
-        font-size: 2.25rem;
-        font-weight: 700;
-        font-family: var(--font-poppins);
-        color: var(--primary);
+        @apply text-4xl font-bold font-poppins;
+        @apply text-gray-900 dark:text-gray-100;
     }
 
     .heading-2 {
-        font-size: 1.875rem;
-        font-weight: 700;
-        font-family: var(--font-poppins);
-        color: var(--primary);
+        @apply text-3xl font-bold font-poppins;
+        @apply text-gray-900 dark:text-gray-100;
     }
 
     .heading-3 {
-        font-size: 1.5rem;
-        font-weight: 700;
-        font-family: var(--font-poppins);
-        color: var(--primary);
+        @apply text-2xl font-bold font-poppins;
+        @apply text-gray-900 dark:text-gray-100;
     }
 
     .heading-4 {
-        font-size: 1.25rem;
-        font-weight: 700;
-        font-family: var(--font-poppins);
-        color: var(--primary);
+        @apply text-xl font-bold font-poppins;
+        @apply text-gray-900 dark:text-gray-100;
     }
 
     .body-text {
-        font-family: var(--font-inter);
-        color: var(--gray-600);
+        @apply font-inter text-gray-600 dark:text-gray-400;
     }
 
+    /* Stats Cards */
     .stats-card {
-        border-radius: 0.75rem;
-        padding: 1.5rem;
-        color: white;
-        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        @apply rounded-xl p-6 text-white;
+        @apply shadow-xl transition-all duration-300 ease-in-out;
+        @apply transform hover:scale-105;
     }
 
     .stats-card-primary {
-        background-color: var(--primary);
+        @apply bg-jasiri-teal;
     }
 
     .stats-card-secondary {
-        background-color: var(--secondary);
+        @apply bg-jasiri-blue;
     }
 
     .stats-card-accent {
-        background-color: var(--accent);
+        @apply bg-jasiri-amber-400;
     }
 
     .stats-card-gradient {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        @apply bg-gradient-to-br from-jasiri-teal to-jasiri-blue;
+    }
+
+    /* Navigation Components */
+    .nav-link {
+        @apply font-inter font-medium px-3 py-2 rounded-lg;
+        @apply text-gray-600 dark:text-gray-400;
+        @apply transition-all duration-200 ease-in-out;
+        @apply hover:text-jasiri-teal dark:hover:text-jasiri-teal;
+        @apply hover:bg-gray-100 dark:hover:bg-gray-700;
+    }
+
+    .nav-link.active {
+        @apply text-jasiri-teal dark:text-jasiri-teal;
+        @apply bg-gray-100 dark:bg-gray-700;
+    }
+
+    /* Icon Components */
+    .icon-primary {
+        @apply text-jasiri-teal;
+    }
+
+    .icon-secondary {
+        @apply text-jasiri-blue;
+    }
+
+    .icon-accent {
+        @apply text-jasiri-amber-400;
+    }
+
+    .icon-white {
+        @apply text-white;
+    }
+
+    /* Alert Components */
+    .alert-info {
+        @apply bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800;
+        @apply text-blue-800 dark:text-blue-200;
+        @apply rounded-xl p-4;
+    }
+
+    .alert-warning {
+        @apply bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800;
+        @apply text-amber-800 dark:text-amber-200;
+        @apply rounded-xl p-4;
+    }
+
+    .alert-success {
+        @apply bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800;
+        @apply text-green-800 dark:text-green-200;
+        @apply rounded-xl p-4;
+    }
+
+    .alert-error {
+        @apply bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800;
+        @apply text-red-800 dark:text-red-200;
+        @apply rounded-xl p-4;
     }
 }
 
@@ -294,70 +317,8 @@
     animation: scaleIn 0.3s ease-out;
 }
 
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideUp {
-    from { 
-        opacity: 0; 
-        transform: translateY(20px); 
-    }
-    to { 
-        opacity: 1; 
-        transform: translateY(0); 
-    }
-}
-
-@keyframes scaleIn {
-    from { 
-        opacity: 0; 
-        transform: scale(0.95); 
-    }
-    to { 
-        opacity: 1; 
-        transform: scale(1); 
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .heading-1 {
-        font-size: 1.875rem;
-    }
-    
-    .heading-2 {
-        font-size: 1.5rem;
-    }
-    
-    .heading-3 {
-        font-size: 1.25rem;
-    }
-}
-
-/* Dark Mode Adjustments */
-@media (prefers-color-scheme: dark) {
-    .text-primary {
-        color: #4F8EF7; /* Lighter blue for dark mode */
-    }
-    
-    .text-secondary {
-        color: #34D399; /* Lighter green for dark mode */
-    }
-    
-    .text-accent {
-        color: #FBBF24; /* Lighter gold for dark mode */
-    }
-    
-    .card {
-        background-color: var(--gray-800);
-        border-color: var(--gray-700);
-    }
-    
-    .body-text {
-        color: var(--gray-400);
-    }
+.animate-bounce-gentle {
+    animation: bounceGentle 2s infinite;
 }
 
 /* Custom Scrollbar */
@@ -366,25 +327,49 @@
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--gray-100);
+    @apply bg-gray-100 dark:bg-gray-800;
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 4px;
+    @apply bg-jasiri-teal rounded;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary);
+    @apply bg-jasiri-blue;
 }
 
 /* Selection */
 ::selection {
-    background-color: var(--primary);
-    color: white;
+    @apply bg-jasiri-teal text-white;
 }
 
 ::-moz-selection {
-    background-color: var(--primary);
-    color: white;
+    @apply bg-jasiri-teal text-white;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .heading-1 {
+        @apply text-3xl;
+    }
+    
+    .heading-2 {
+        @apply text-2xl;
+    }
+    
+    .heading-3 {
+        @apply text-xl;
+    }
+}
+
+/* Focus Visible for Accessibility */
+.focus-visible:focus {
+    @apply outline-none ring-2 ring-jasiri-teal ring-opacity-50;
+}
+
+/* Print Styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
 }

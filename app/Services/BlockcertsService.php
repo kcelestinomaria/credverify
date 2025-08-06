@@ -190,14 +190,48 @@ class BlockcertsService
     /**
      * Sign credential with institution's private key
      */
+    /**
+     * Sign credential with institution's private key
+     */
     private function signCredential(Credential $credential)
     {
+        // Get the institution profile
+        $issuerProfile = $this->getIssuerProfile($credential->institution);
+        
+        // Build the credential subject
+        $credentialSubject = [
+            'id' => 'did:example:' . $credential->verification_code,
+            'name' => $credential->student->full_name,
+            'achievement' => [
+                'id' => $credential->id,
+                'type' => 'EducationalCredential',
+                'name' => $credential->credential_type->name,
+                'description' => $credential->description,
+                'criteria' => ['narrative' => $credential->criteria],
+                'image' => $credential->image_url ?? null
+            ]
+        ];
+        
+        // Build the credential data
         $credentialData = [
+            '@context' => [
+                'https://www.w3.org/2018/credentials/v1',
+                'https://w3id.org/blockcerts/v3'
+            ],
             'id' => $credential->verification_code,
-            'type' => config('blockchain.blockcerts.type'),
-            'issuer' => $this->getIssuerProfile($credential->institution),
+            'type' => ['VerifiableCredential', 'BlockcertsCredential'],
+            'issuer' => $issuerProfile,
             'issuanceDate' => $credential->issued_on->toISOString(),
-            'credentialSubject' => [
+            'credentialSubject' => $credentialSubject,
+            'credentialSchema' => [
+                'id' => 'https://w3id.org/blockcerts/schema/3.0/credential.json',
+                'type' => 'JsonSchemaValidator2018'
+            ],
+            'display' => [
+                'contentMediaType' => 'text/html',
+                'content' => view('templates.credential', ['credential' => $credential])->render()
+            ]
+        ];
                 'id' => 'did:example:' . $credential->verification_code,
                 'name' => $credential->full_name,
                 'degree' => [
